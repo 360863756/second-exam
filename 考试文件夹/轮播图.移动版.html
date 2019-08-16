@@ -1,0 +1,160 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+<meta charset="utf-8">
+<title></title>
+<style>
+* {margin:0; padding:0; }
+li{list-style:none; }
+
+#div1 {width:850px; height:500px; margin:50px auto; 
+overflow:hidden;
+ position:relative;}
+#div1 ul {position: absolute; left: 0; top: 0;}
+#div1 ul.trans {transition: top 1s;}
+#div1 ul li{height:500px; float: left;}
+#div1 ol {position:absolute;right: 10%;bottom: 10px;z-index:6}
+#div1 ol li{width: 20px;height: 20px;background: #fff;margin-left: 5px;float: left;line-height: 20px;text-align: center;cursor: pointer;}
+#div1 ol li.ac{background: red;color: #fff;}
+#div1>a{text-decoration: none;position: absolute;top: 50%;margin-top: -10px;height: 40px;line-height: 32px;text-align: center;width: 40px;font-size: 40px;vertical-align: middle;color: #fff;background: rgba(0,0,0,0.5);z-index:6;}
+#goPrev{left: 0;}
+#goNext{right: 0;}
+img{width:850px; height:500px;}
+</style>
+<script src="tools.js"></script>
+</head>
+
+<body>
+<div id="div1">
+	<ul class="trans">
+    <li><a href="javascript:alert(0);"><img src="img/1.jpg" /></a></li>
+    <li><a href="javascript:alert(1);"><img src="img/2.jpg" /></a></li>
+    <li><a href="javascript:alert(2);"><img src="img/3.jpg" /></a></li>
+    <li><a href="javascript:alert(3);"><img src="img/4.jpg" /></a></li>
+    <li><a href="javascript:alert(4);"><img src="img/5.jpg" /></a></li>
+  </ul>
+  <ol>
+    <li class="ac">1</li>
+    <li>2</li>
+    <li>3</li>
+    <li>4</li>
+    <li>5</li>
+  </ol>
+  <a href="javascript:;" id="goPrev">&laquo;</a>
+  <a href="javascript:;" id="goNext">&raquo;</a>
+  <script>
+    class imgMove {
+      constructor(){
+      this.div =document.querySelector("#div1")
+      this.ul = document.querySelector(".trans")
+      this.transLi = this.ul.children;
+      this.olLi = document.querySelectorAll("ol li")
+      this.goPrev = document.querySelector("#goPrev")
+      this.goNext = document.querySelector("#goNext")
+      this.len = this.transLi.length;
+      this.li = this.transLi[0].cloneNode(true)
+      this.index = 0;
+      this.lastindex = 0 ;
+      this.ul.appendChild(this.li);
+      this.timer;
+      this.leaveMove();
+      this.numClick();
+      this.goNextClick();
+      this.goPrevClick();
+      this.moveAuto();
+      this.stopMove();
+      }
+      numClick(){
+      Array.from(this.olLi).forEach((item , n)=>{
+        item.onclick = ()=>{
+            this.lastindex= this.index;
+            this.index = n ;
+            this.olLi[this.lastindex].classList.remove("ac");
+            this.olLi[this.index].classList.add("ac")
+            tools.css(this.ul , {
+                top: -this.index*this.transLi[0].offsetHeight +"px"
+            })
+        }
+      })
+    }
+    goNextClick(){
+      goNext.onclick = ()=>{
+          if(this.index!=4){
+            this.lastindex= this.index;
+            this.index++;
+            this.olLi[this.lastindex].classList.remove("ac");
+            this.olLi[this.index].classList.add("ac")
+            tools.css(this.ul , {
+                top: -this.index*this.transLi[0].offsetHeight +"px"
+            })
+          }else{
+            this.lastindex= this.index;
+            this.index = 0;
+            this.olLi[this.lastindex].classList.remove("ac");
+            this.olLi[this.index].classList.add("ac")
+              tools.css(this.ul , {
+                top: -this.len*this.transLi[0].offsetHeight +"px"
+            })
+            setTimeout(()=>{
+              this.ul.classList.remove("trans")
+              tools.css(this.ul , {
+                top: "0px"
+            })
+            setTimeout(() => {
+              this.ul.classList.add("trans")
+            }, 50);
+            },1000)
+          }
+      }
+      }
+      goPrevClick(){
+      goPrev.onclick = ()=>{
+          if(this.index!=0){
+            this.lastindex= this.index;
+            this.index--;
+            this.olLi[this.lastindex].classList.remove("ac");
+            this.olLi[this.index].classList.add("ac")
+            tools.css(this.ul , {
+              top: -this.index*this.transLi[0].offsetHeight +"px"
+            })
+          }else{
+            this.lastindex= this.index;
+            this.index = 4;
+            this.olLi[this.lastindex].classList.remove("ac");
+            this.olLi[this.index].classList.add("ac")
+            this.ul.classList.remove("trans")
+            tools.css(this.ul , {
+              top: -this.len*this.transLi[0].offsetHeight +"px"
+            })
+            setTimeout(()=>{
+              this.ul.classList.add("trans")
+            tools.css(this.ul , {
+              top: -this.index*this.transLi[0].offsetHeight +"px"
+            })
+            },10)
+          }
+      }
+      }
+      moveAuto(){
+      this.timer = setInterval(()=>{
+        this.goNext.onclick()
+      },2000)
+      }
+      stopMove(){
+        this.div.onmouseenter=()=>{
+        clearInterval(this.timer)
+      }
+      }
+      leaveMove(){
+        this.div.onmouseleave=()=>{
+          this.timer = setInterval(function (){
+            this.goNext.onclick()
+      },2000)
+      }
+      }
+    }
+    new imgMove();
+  </script>
+</div>
+</body>
+</html>
